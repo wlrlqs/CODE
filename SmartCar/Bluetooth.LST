@@ -1,0 +1,65 @@
+C51 COMPILER V9.60.0.0   BLUETOOTH                                                         09/01/2022 19:19:40 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE BLUETOOTH
+OBJECT MODULE PLACED IN Bluetooth.OBJ
+COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE Bluetooth.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          //红外
+   3          extern unsigned char ircode[4];
+   4          sbit beep=P2^3;
+   5          //标志
+   6          extern bit IFFlag;
+   7          //oled
+   8          extern void oled_speed();
+   9          extern void oled_manual();
+  10          extern void oled_find_track();
+  11          extern void oled_auto_avoid();
+  12          extern void oled_auto_follow();
+  13          //红外决策
+  14          extern void DECISION(void);
+  15          
+  16          void ConfigUART(unsigned int baud)
+  17          {
+  18   1          SCON  = 0x50;  //配置串口为模式1
+  19   1          TMOD &= 0x0F;  //清零T1的控制位
+  20   1          TMOD |= 0x20;  //配置T1为模式2
+  21   1          TH1 = 256 - (11059200/12/32)/baud;  //计算T1重载值
+  22   1          TL1 = TH1;     //初值等于重载值
+  23   1          ET1 = 0;       //禁止T1中断
+  24   1          ES  = 1;       //使能串口中断
+  25   1          TR1 = 1;       //启动T1
+  26   1      }
+  27          
+  28          void InterruptUART() interrupt 4
+  29          {
+  30   1      
+  31   1        if(RI)
+  32   1        {
+  33   2          IFFlag=0;
+  34   2          RI = 0;
+  35   2          ircode[2]=SBUF;
+  36   2          DECISION();
+  37   2        }
+  38   1        if(TI)
+  39   1        {
+  40   2          TI = 0;
+  41   2        }
+  42   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    114    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

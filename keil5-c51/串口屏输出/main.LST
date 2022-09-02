@@ -1,0 +1,112 @@
+C51 COMPILER V9.53.0.0   MAIN                                                              05/14/2022 13:27:30 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "reg52.h"
+   2          #include "stdio.h"
+   3          
+   4          #define uchar unsigned char
+   5          #define uint unsigned int 
+   6          
+   7          void uart_cfg();
+   8          void send_byte(uchar by);
+   9          void send_string(uchar *p);
+  10          void delay(uchar i);
+  11          /*简单延时*/
+  12          void delay(unsigned int xms)            //@11.0592MHz
+  13          {
+*** WARNING C235 IN LINE 13 OF main.c: parameter 1: different types
+  14   1              unsigned char i, j;
+  15   1              while(xms){
+  16   2      
+  17   2              i = 2;
+  18   2              j = 199;
+  19   2              do
+  20   2              {
+  21   3                      while (--j);
+  22   3              } while (--i);
+  23   2              xms--;
+  24   2      }
+  25   1      }
+  26          void main()
+  27          {       
+  28   1              unsigned int a=10;
+  29   1              uart_cfg(); ////9600bps@11.0592MHz   ,0xf9
+  30   1              delay(5000);
+  31   1              send_string("DIR(2); \r\n");
+  32   1              send_string("DIR(0);\r\n");
+  33   1              delay(1000);
+  34   1              send_string("DC16(30,30,'串口模块',5);\r\n");
+  35   1              delay(3000);
+  36   1             while(1)
+  37   1                      {
+  38   2                      send_string("DC16(30,30,'串口模块',5);\r\n");
+  39   2                      delay(500);
+  40   2                                    
+  41   2                      }
+  42   1      }
+  43          
+  44           void uart_cfg(){
+  45   1       
+  46   1      
+  47   1              PCON &= 0x7F;           //波特率不倍速
+  48   1              SCON = 0x50;            //8位数据,可变波特率
+  49   1              AUXR &= 0xBF;           //定时器1时钟为Fosc/12,即12T
+  50   1              AUXR &= 0xFE;           //串口1选择定时器1为波特率发生器
+  51   1              TMOD &= 0x0F;           //清除定时器1模式位
+  52   1              TMOD |= 0x20;           //设定定时器1为8位自动重装方式
+  53   1              TL1 = 0xFD;             //设定定时初值
+  54   1              TH1 = 0xFD;             //设定定时器重装值
+C51 COMPILER V9.53.0.0   MAIN                                                              05/14/2022 13:27:30 PAGE 2   
+
+  55   1              ET1 = 0;                //禁止定时器1中断
+  56   1              TR1 = 1;                //启动定时器1
+  57   1       }
+  58          
+  59           /*中断处理函数*/
+  60          // void uart_interrupt() interrupt 4{
+  61          //
+  62          //        if(RI==1)RI = 0;
+  63          //
+  64          //        if(TI==1);
+  65          //               //TI = 0;
+  66          //    }
+  67          
+  68           
+  69          /*发送一个 字符*/
+  70          void send_byte(uchar by){
+  71   1      
+  72   1          SBUF = by;
+  73   1          while(!TI);//当写下这句的时候，就不要在中断函数里面在写TI = 0;这句了，不然�
+             -��入中断函数将TI清零之后，程序就会一直卡在这里
+  74   1          TI = 0;       //在这里将TI清零
+  75   1      }
+  76          /*发送一个字符串*/
+  77          void send_string(uchar *p){
+  78   1      
+  79   1          while(*p!= '\0'){
+  80   2          
+  81   2              send_byte(*p);
+  82   2              p++;
+  83   2      
+  84   2          }
+  85   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    145    ----
+   CONSTANT SIZE    =     53    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,119 @@
+C51 COMPILER V9.53.0.0   MAIN                                                              05/14/2022 14:10:58 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          
+   4          void DelayMs(unsigned int i);
+   5          void SerialInit();
+   6          void SendByte(unsigned char sbyte);
+   7          void SendString(unsigned char *pstr);
+   8          
+   9          
+  10          void main(void)
+  11          {
+  12   1                      SerialInit();
+  13   1                  SendString("CLR(1);\r\n");
+  14   1                      while(1);         //注:必需要无限循环
+  15   1      }
+  16          
+  17          
+  18          /*
+  19          //单片机时钟周期:11.0592MHz   以时钟1作为波特率发生器
+  20          void SerialInit(){
+  21           TMOD=0x20;   //设置T1工作方式为方式2
+  22           TH1=0xfd; //给定时器高位装初值
+  23           TL1=0xfd; //给定时器低位装初值
+  24           TR1=1;  //开定时器
+  25                       //以上是设置波特率
+  26           SM0=0;  //设置串口通讯方式为方式1
+  27           SM1=1;  
+  28           REN=1;  //串口是否接收数据的开关
+  29          
+  30           EA=1; //总中断打开,采用查询法时不用打开中断
+  31           ES=1; //串口中断开关,采用查询法时不用打开中断
+  32          }
+  33          */
+  34          //单片机时钟周期:11.0592MHz         以时钟T2作为波特率发生器
+  35          void SerialInit(){
+  36   1               PCON &= 0x7F;      //波特率不倍速 SMOD=0
+  37   1           SCON = 0x50;       //方式1,8位数据,可变波特率,接收允许
+  38   1           T2CON  = 0x34;   
+  39   1           RCAP2H = 0xFF;    
+  40   1           RCAP2L = 0xDC;  
+  41   1           TH2    = 0xFF;  
+  42   1           TL2    = 0xDC;
+  43   1                 
+  44   1               EA=1; //总中断打开,采用查询法时不用打开中断 
+  45   1           ES = 1;          //串口中断开关,采用查询法时不用打开中断
+  46   1      
+  47   1      }
+  48          
+  49          
+  50          //串口中断函数:
+  51          void SerialPortInte(void) interrupt 4 //采用串口中断法收发数据
+  52          {
+  53   1               unsigned char rbyte;
+  54   1               if(RI){     //RI=1,判定为串口接收到了数据，RI要清零，
+  55   2               RI=0;
+C51 COMPILER V9.53.0.0   MAIN                                                              05/14/2022 14:10:58 PAGE 2   
+
+  56   2                       rbyte=SBUF; 
+  57   2                       if(rbyte==0x0A){         
+  58   3                          SendString("换行");
+  59   3                       }else if(rbyte==0x0D){
+  60   3                              SendString("回车");
+  61   3                       }else{
+  62   3                              SendByte(rbyte); 
+  63   3                       }
+  64   2                              
+  65   2           }
+  66   1      
+  67   1      }
+  68          
+  69          //串口发送一个字节:
+  70          void SendByte(unsigned char sbyte)
+  71          { 
+  72   1           SBUF=sbyte; //发送数据
+  73   1           while(!TI); //等待发送完成
+  74   1           TI=0; //清零发送标志位
+  75   1      }
+  76           
+  77          //串口发送一个字符串:
+  78          void SendString(unsigned char *pstr) //定义指针
+  79          {
+  80   1           while(*pstr!='\0') //字符串是否发完
+  81   1           {
+  82   2               SendByte(*pstr);//发送字符串数据
+  83   2               pstr++; //指向下一个字符
+  84   2           }
+  85   1      }
+  86          
+  87          void DelayMs(unsigned int i)  //延时i ms
+  88          {
+  89   1          unsigned int j;
+  90   1          while(i--)
+  91   1          {
+  92   2              for(j = 0; j < 125; j++);
+  93   2          }
+  94   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    195    ----
+   CONSTANT SIZE    =     24    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

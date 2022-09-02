@@ -1,0 +1,71 @@
+C51 COMPILER V9.60.0.0   ULTRASONIC                                                        09/01/2022 19:19:41 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ULTRASONIC
+OBJECT MODULE PLACED IN UltraSonic.OBJ
+COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE UltraSonic.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          sbit RX = P2^0;//ECHO³¬Éù²¨Ä£¿é»ØÏì¶Ë
+   4          sbit TX = P2^1;//TRIG³¬Éù²¨Ä£¿é´¥·¢¶Ë
+   5          extern unsigned char ircode[4];
+   6          unsigned int Distance=0;
+   7          unsigned int time;
+   8          bit Display=0;
+   9          extern void oled_Distance();
+  10          
+  11          void Open_US()
+  12          {
+  13   1         unsigned char count=1;
+  14   1         TH0=0;
+  15   1         TL0=0;
+  16   1         TX=1;       
+  17   1           while(count--);
+  18   1         TX=0;
+  19   1      }
+  20          void Receive_US()
+  21          {   
+  22   1      
+  23   1        while(!RX)
+  24   1        {
+  25   2          if(ircode[2]!=0x5e && ircode[2]!=0x42  && ircode[2]!=0x22)return;
+  26   2        }
+  27   1        TR0=1;
+  28   1        while(RX)
+  29   1        {
+  30   2          if(ircode[2]!=0x5e && ircode[2]!=0x42)
+  31   2          {
+  32   3            TR0=0;
+  33   3            return;
+  34   3          }
+  35   2        }
+  36   1        time=TH0*256+TL0;
+  37   1        TR0=0;
+  38   1        Distance=(unsigned int)(time*1.085)*0.17;//MM
+  39   1      
+  40   1      }
+  41          void measure_distance()
+  42          {
+  43   1        Open_US();
+  44   1        Receive_US();
+  45   1        oled_Distance();
+  46   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    134    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.0.0   ULTRASONIC                                                        09/01/2022 19:19:41 PAGE 2   
+
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

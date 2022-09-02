@@ -1,0 +1,192 @@
+C51 COMPILER V9.60.0.0   INFRARED                                                          09/01/2022 19:19:40 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE INFRARED
+OBJECT MODULE PLACED IN Infrared.OBJ
+COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE Infrared.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          sbit IR_INPUT = P0^1;  //红外接收引脚
+   4          sbit beep = P2^3;
+   5          unsigned char ircode[4]={0,0,0x11,0};  //红外代码接收缓冲区
+   6          //标志
+   7          bit IFFlag;
+   8          //电机
+   9          extern void EMinit();
+  10          extern void go_stop();
+  11          extern void go_still();
+  12          extern void go_forward();
+  13          extern void go_back();
+  14          extern void go_left();
+  15          extern void go_right();
+  16          extern void rotate_l();
+  17          extern void rotate_r();
+  18          extern void accelerate();
+  19          extern void decelerate();
+  20          extern void find_track();
+  21          extern void auto_avoid();
+  22          extern void auto_follow();
+  23          //oled
+  24          extern void oled_speed();
+  25          extern void oled_manual();
+  26          extern void oled_find_track();
+  27          extern void oled_auto_avoid();
+  28          extern void oled_auto_follow();
+  29          //OLED
+  30          extern bit Display;
+  31          
+  32          void InitInfrared()
+  33          { 
+  34   1        IR_INPUT = 1;
+  35   1        //PT0 = 1;//优先
+  36   1        TMOD = 0x01;
+  37   1        TR0 = 0;
+  38   1        ET0 = 0;//停止溢出
+  39   1        IT0 = 1;//下沿
+  40   1        EX0 = 1;//外中
+  41   1      }
+  42          
+  43          unsigned int GetHighTime()
+  44          {
+  45   1        TH0 = 0;
+  46   1        TL0 = 0;
+  47   1        TR0 = 1;
+  48   1        while(IR_INPUT)
+  49   1        {
+  50   2          if(TH0 > 0x40)
+  51   2          {
+  52   3            break;
+  53   3          }
+  54   2        }
+  55   1        TR0 = 0;
+C51 COMPILER V9.60.0.0   INFRARED                                                          09/01/2022 19:19:40 PAGE 2   
+
+  56   1      
+  57   1        return(TH0 * 256 + TL0);
+  58   1      }
+  59          
+  60          unsigned int GetLowTime()
+  61          {
+  62   1        TH0 = 0;
+  63   1        TL0 = 0;
+  64   1        TR0 = 1;
+  65   1        while(!IR_INPUT)
+  66   1        {
+  67   2          if(TH0 > 0x40)
+  68   2          {
+  69   3            break;
+  70   3          }
+  71   2        }
+  72   1        TR0 = 0;
+  73   1      
+  74   1        return(TH0 * 256 + TL0);
+  75   1      }
+  76          unsigned char NOSIGN()
+  77          {
+  78   1        unsigned long int times=0;
+  79   1        while(1)
+  80   1        {
+  81   2          if(IR_INPUT)times++;
+  82   2          if(!IR_INPUT)times=0;
+  83   2          if(times>1900)
+  84   2          {
+  85   3            return 1;
+  86   3          }
+  87   2        }   
+  88   1      }
+  89          void DECISION(void)
+  90          {
+  91   1        switch(ircode[2])//对应
+  92   1        {
+  93   2          case 0x11:go_still(); oled_manual();break;
+  94   2          case 0x1c:beep= 0;    oled_manual();break;//停 5
+  95   2          case 0x18:go_forward(); oled_manual();break;//上  2
+  96   2          case 0x52:go_back();  oled_manual();break;//下  8
+  97   2          case 0x08:go_left();  oled_manual();break;//左  4
+  98   2          case 0x5a:go_right(); oled_manual();break;//右  6
+  99   2          case 0x07:decelerate(); oled_speed();break;//-
+ 100   2          case 0x15:accelerate(); oled_speed();break;//+
+ 101   2          case 0x0c:oled_find_track();  find_track(); break;//   1
+ 102   2          case 0x5e:oled_auto_avoid();  auto_avoid(); break;//   3
+ 103   2          case 0x42:oled_auto_follow(); auto_follow();  break;//   7
+ 104   2          case 0x31:rotate_l(); oled_manual();break;//左  4
+ 105   2          case 0x32:rotate_r(); oled_manual();break;//右  6 
+ 106   2          case 0x77:Display=~Display;break;//右 6
+ 107   2          //case 0x33:oled_auto_follow();  R_follow();break;//右跟随  6
+ 108   2          //case 0x34:oled_auto_follow();  L_follow();break;//左跟随  6
+ 109   2        }
+ 110   1      }
+ 111          void EXINT1_ISR() interrupt 0
+ 112          {
+ 113   1        unsigned char i, j;
+ 114   1        unsigned int time;
+ 115   1        unsigned char byt;
+ 116   1        time = GetLowTime();
+ 117   1        if((time <7833) || (time > 8755))    
+C51 COMPILER V9.60.0.0   INFRARED                                                          09/01/2022 19:19:40 PAGE 3   
+
+ 118   1        {
+ 119   2          return; 
+ 120   2        }
+ 121   1      
+ 122   1        time = GetHighTime();
+ 123   1        if((time<3686) || (time > 4608))
+ 124   1        {
+ 125   2          return;
+ 126   2        }
+ 127   1      
+ 128   1        for(i=0; i<4; i++)
+ 129   1        {
+ 130   2          for(j=0; j<8; j++)
+ 131   2          {
+ 132   3            time = GetLowTime();
+ 133   3            if((time<313) ||(time >718))
+ 134   3            {
+ 135   4              return;
+ 136   4            }
+ 137   3            time = GetHighTime();
+ 138   3            if((time>313) && (time <718))
+ 139   3            {
+ 140   4              byt >>= 1;  
+ 141   4            }
+ 142   3            else if((time>1345) && (time<1751))
+ 143   3            {
+ 144   4              byt >>= 1;
+ 145   4              byt |= 0x80;
+ 146   4            }
+ 147   3            else
+ 148   3            {
+ 149   4              return;
+ 150   4            }
+ 151   3          }
+ 152   2          ircode[i] = byt;
+ 153   2        }
+ 154   1        IFFlag=1;
+ 155   1        DECISION();
+ 156   1        while(1)
+ 157   1        {
+ 158   2          if(NOSIGN())
+ 159   2          {
+ 160   3            beep = 1;
+ 161   3            IR_INPUT = 1;
+ 162   3            break;
+ 163   3          }
+ 164   2        }
+ 165   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    520    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

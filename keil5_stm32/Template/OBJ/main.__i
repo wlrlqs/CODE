@@ -1,0 +1,6 @@
+-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\USER -I ..\stm32103RC\inc -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart
+-ID:\日常\各种文档\ALL_CODE\keil5_stm32\Template\USER\RTE
+-IC:\Keil_v5_arm\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include
+-IC:\Keil_v5_arm\ARM\CMSIS\Include
+-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER
+-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d "main.c"

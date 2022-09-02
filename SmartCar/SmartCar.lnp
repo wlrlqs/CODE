@@ -1,0 +1,9 @@
+"Bluetooth.obj",
+"EMcontrol.obj",
+"Infrared.obj",
+"main.obj",
+"PWMcontrol.obj",
+"Oled.obj",
+"UltraSonic.obj" 
+TO "SmartCar" 
+RAMSIZE(256) 

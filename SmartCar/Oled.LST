@@ -1,0 +1,287 @@
+C51 COMPILER V9.60.0.0   OLED                                                              09/01/2022 19:19:41 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE OLED
+OBJECT MODULE PLACED IN Oled.OBJ
+COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE Oled.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "oled.h"
+   2          #include "oledfont.h"
+   3          //#include "tim.h"
+   4          
+   5          //PWM
+   6          extern unsigned char PWM_LEVEL_1;
+   7          extern unsigned char PWM_LEVEL_2;
+   8          //US
+   9          extern unsigned int Distance;
+  10          void Delay_us(unsigned char n)
+  11          {
+  12   1        while(n--);
+  13   1      }
+  14          
+  15          //OLED初始化
+  16          void OLED_Init(void)
+  17          {
+  18   1       unsigned char i;
+  19   1      
+  20   1       OLED_SDA_OFF();
+  21   1       OLED_SCK_ON();
+  22   1      
+  23   1       for(i=0;i<25;i++)
+  24   1       {
+  25   2        OLED_Send_Cmd(OLED_Init_cmd[i]);
+  26   2       }
+  27   1      
+  28   1      }
+  29          
+  30          //
+  31          void OLED_IIC_Start(void)
+  32          {
+  33   1       OLED_SDA_ON();
+  34   1       Delay_us(1);
+  35   1       OLED_SCK_ON();
+  36   1       Delay_us(1);
+  37   1       OLED_SDA_OFF();
+  38   1       Delay_us(1);  ///
+  39   1       OLED_SCK_OFF();
+  40   1       OLED_IIC_Write(0x78);
+  41   1      }
+  42           
+  43          //
+  44          void OLED_IIC_Stop(void)
+  45          {
+  46   1       OLED_SDA_OFF();
+  47   1       Delay_us(1);
+  48   1       OLED_SCK_ON();
+  49   1       Delay_us(1); ///
+  50   1       OLED_SDA_ON();
+  51   1      }
+  52          
+  53          //OLED发送指令函数
+  54          void OLED_Send_Cmd(unsigned char command)
+  55          {
+C51 COMPILER V9.60.0.0   OLED                                                              09/01/2022 19:19:41 PAGE 2   
+
+  56   1       OLED_IIC_Start();
+  57   1       OLED_IIC_Write(0x00); 
+  58   1       OLED_IIC_Write(command);
+  59   1       OLED_IIC_Stop();
+  60   1      }
+  61          
+  62          //OLED发送显示8点数据函数
+  63          void OLED_Send_Data(unsigned char dat)
+  64          {
+  65   1       OLED_IIC_Start();
+  66   1       OLED_IIC_Write(0x40);
+  67   1       OLED_IIC_Write(dat);
+  68   1       OLED_IIC_Stop();
+  69   1      }
+  70          
+  71          //OLED设置列数 128列 0~127
+  72          void OLED_Set_Column(unsigned char column)
+  73          {
+  74   1       OLED_Send_Cmd(0x10|(column>>4));//设置列地址高位
+  75   1       OLED_Send_Cmd(0x00|(column&0x0f));//设置列地址低位
+  76   1      }
+  77          
+  78          //OLED设置大行数 8大行 0~7 每大行由8小行组成
+  79          void OLED_Set_Page(unsigned char line)
+  80          {
+  81   1       OLED_Send_Cmd(0xb0+line);
+  82   1      }
+  83          
+  84          //OLED清屏函数 黑屏
+  85          void OLED_ALL_Clear(void)
+  86          {
+  87   1       unsigned char line,column;
+  88   1       for(line=0;line<8;line++)
+  89   1       {  
+  90   2        OLED_Set_Page(line);
+  91   2        OLED_Set_Column(0);
+  92   2        for(column=0;column<128;column++)
+  93   2        {
+  94   3         OLED_Send_Data(0x00);
+  95   3        }
+  96   2       }
+  97   1      }
+  98          
+  99          //OLED清屏函数 第一大行黄色 其他7大行蓝色
+ 100          void OLED_ALL_Full(void)
+ 101          {
+ 102   1       unsigned char line,column;
+ 103   1       for(line=0;line<8;line++)
+ 104   1       { 
+ 105   2        OLED_Set_Page(line);
+ 106   2        OLED_Set_Column(0);
+ 107   2        for(column=0;column<128;column++)
+ 108   2        {
+ 109   3         OLED_Send_Data(0xff);
+ 110   3        }
+ 111   2       }
+ 112   1      }
+ 113          
+ 114          //OLED写入1Byte数据
+ 115          void OLED_IIC_Write(unsigned char date)
+ 116          {
+ 117   1       unsigned char i, temp;
+C51 COMPILER V9.60.0.0   OLED                                                              09/01/2022 19:19:41 PAGE 3   
+
+ 118   1       temp = date;
+ 119   1       for(i=0; i<8; i++)
+ 120   1       { 
+ 121   2        OLED_SCK_OFF();
+ 122   2        if((temp&0x80) == 0)
+ 123   2        {
+ 124   3         OLED_SDA_OFF();
+ 125   3        }
+ 126   2        else
+ 127   2        {
+ 128   3         OLED_SDA_ON();
+ 129   3        }
+ 130   2        temp = temp << 1;
+ 131   2        Delay_us(1);
+ 132   2        OLED_SCK_ON();
+ 133   2        Delay_us(1);
+ 134   2       }
+ 135   1       OLED_SCK_OFF();
+ 136   1       Delay_us(1);
+ 137   1       OLED_SDA_ON();
+ 138   1       Delay_us(1);
+ 139   1       OLED_SCK_ON();
+ 140   1       Delay_us(1);
+ 141   1       OLED_SCK_OFF();
+ 142   1       Delay_us(1);
+ 143   1      }
+ 144          
+ 145          //OLED显示一个8x6的ASCII码符号
+ 146          /*
+ 147          void OLED_Draw_8_6_ASCII(unsigned char line,unsigned char column,int ASCII_num)
+ 148          {
+ 149           int i;
+ 150           OLED_Set_Page(line);
+ 151           OLED_Set_Column(column);
+ 152           for(i=0;i<6;i++)
+ 153           {
+ 154            OLED_Send_Data(ASCII8x6[ASCII_num][i]);
+ 155           }
+ 156          }
+ 157          */
+ 158          
+ 159          //OLED显示一个16x8的ASCII码符号
+ 160          void OLED_Draw_16_8_ASCII(unsigned char line,unsigned char column,int ASCII_num)
+ 161          {
+ 162   1       int i; 
+ 163   1       OLED_Set_Page(line);
+ 164   1       OLED_Set_Column(column);
+ 165   1       for(i=0;i<8;i++)
+ 166   1       {
+ 167   2        OLED_Send_Data(ASCII16x8[ASCII_num][i]);
+ 168   2       }
+ 169   1       OLED_Set_Page(line+1);
+ 170   1       OLED_Set_Column(column);
+ 171   1       for(i=8;i<16;i++)
+ 172   1       {
+ 173   2        OLED_Send_Data(ASCII16x8[ASCII_num][i]);
+ 174   2       }
+ 175   1      }  
+ 176          
+ 177          //OLED显示一个16x16的汉字符号
+ 178          void OLED_Draw_16_16_Hz(unsigned char line,unsigned char column,int Hz_num)
+ 179          {
+C51 COMPILER V9.60.0.0   OLED                                                              09/01/2022 19:19:41 PAGE 4   
+
+ 180   1       int i;
+ 181   1       OLED_Set_Page(line);
+ 182   1       OLED_Set_Column(column);
+ 183   1       for(i=0;i<16;i++)
+ 184   1       {
+ 185   2        OLED_Send_Data(Hz16x16[Hz_num][i]);
+ 186   2       }
+ 187   1       OLED_Set_Page(line+1);
+ 188   1       OLED_Set_Column(column);
+ 189   1       for(i=16;i<32;i++)
+ 190   1       {
+ 191   2        OLED_Send_Data(Hz16x16[Hz_num][i]);
+ 192   2       }
+ 193   1      }
+ 194          
+ 195          void oled_manual()
+ 196          {
+ 197   1        OLED_Draw_16_16_Hz(0,48,6);
+ 198   1        OLED_Draw_16_16_Hz(0,64,7);
+ 199   1      }
+ 200          void oled_speed()
+ 201          {
+ 202   1        switch(PWM_LEVEL_1)
+ 203   1        {
+ 204   2          case 2  :OLED_Draw_16_8_ASCII(3,48,1);break;
+ 205   2          case 4  :OLED_Draw_16_8_ASCII(3,48,2);;break;
+ 206   2          case 6  :OLED_Draw_16_8_ASCII(3,48,3);;break;
+ 207   2          case 8  :OLED_Draw_16_8_ASCII(3,48,4);;break;
+ 208   2          case 10 :OLED_Draw_16_8_ASCII(3,48,5);;break;
+ 209   2        }
+ 210   1      }
+ 211          void oled_find_track()
+ 212          {
+ 213   1        OLED_Draw_16_16_Hz(0,48,8);
+ 214   1        OLED_Draw_16_16_Hz(0,64,9);
+ 215   1      }
+ 216          void oled_auto_avoid()
+ 217          {
+ 218   1        OLED_Draw_16_16_Hz(0,48,10);
+ 219   1        OLED_Draw_16_16_Hz(0,64,11);
+ 220   1      }
+ 221          void oled_auto_follow()
+ 222          {
+ 223   1        OLED_Draw_16_16_Hz(0,48,12);
+ 224   1        OLED_Draw_16_16_Hz(0,64,13);
+ 225   1      }
+ 226          void oled_Distance()
+ 227          {
+ 228   1        OLED_Draw_16_8_ASCII(6,48,(Distance/10000)%10);
+ 229   1        OLED_Draw_16_8_ASCII(6,56,(Distance/1000)%10);
+ 230   1        OLED_Draw_16_8_ASCII(6,64,(Distance/100)%10);
+ 231   1        OLED_Draw_16_8_ASCII(6,72,(Distance/10)%10);
+ 232   1        OLED_Draw_16_8_ASCII(6,80,Distance%10);
+ 233   1      }      
+ 234          void OledInit() 
+ 235          {
+ 236   1         OLED_Init();
+ 237   1         OLED_ALL_Clear();
+ 238   1         OLED_Draw_16_16_Hz(0,0,0);
+ 239   1         OLED_Draw_16_16_Hz(0,16,1);
+ 240   1         OLED_Draw_16_8_ASCII(0,32,10);
+ 241   1      
+C51 COMPILER V9.60.0.0   OLED                                                              09/01/2022 19:19:41 PAGE 5   
+
+ 242   1         OLED_Draw_16_16_Hz(3,0,2);
+ 243   1         OLED_Draw_16_16_Hz(3,16,3);
+ 244   1         OLED_Draw_16_8_ASCII(3,32,10);
+ 245   1      
+ 246   1         OLED_Draw_16_16_Hz(6,0,4);
+ 247   1         OLED_Draw_16_16_Hz(6,16,5);
+ 248   1         OLED_Draw_16_8_ASCII(6,32,10);
+ 249   1      
+ 250   1         oled_manual();
+ 251   1         oled_speed();
+ 252   1      }
+ 253          
+ 254          
+ 255          
+ 256          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    927    ----
+   CONSTANT SIZE    =    649    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      20
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

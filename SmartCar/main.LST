@@ -1,0 +1,112 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              09/01/2022 19:19:40 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <intrins.h>
+   3          //红外使用T0
+   4          void delay(unsigned int n,unsigned char mode);
+   5          int Delay1ms(int n);
+   6          void DECISION_MAIN();
+   7          
+   8          //红外
+   9          extern unsigned char ircode[4];
+  10          extern void InitInfrared(void);
+  11          extern bit IFFlag;
+  12          //电机
+  13          extern void EMinit();
+  14          extern void go_stop();
+  15          extern void go_right();
+  16          extern void find_track();
+  17          extern void auto_follow();
+  18          extern void auto_avoid();
+  19          extern void measure_distance();
+  20          //PWM
+  21          extern void InitPWM();
+  22          extern void R_follow();     
+  23          extern void L_follow(); 
+  24          //蓝牙
+  25          extern void ConfigUART(unsigned int baud);
+  26          //蜂鸣器
+  27          sbit beep=P2^3;
+  28          //Oled
+  29          extern void OledInit();
+  30          
+  31          void main()
+  32          {
+  33   1        EMinit();
+  34   1        PT1 = 1;
+  35   1        InitPWM();
+  36   1        InitInfrared();
+  37   1        ConfigUART(9600);
+  38   1        OledInit();
+  39   1          EA = 1;      //总中
+  40   1        
+  41   1          while(1)
+  42   1          {
+  43   2            //find_track();
+  44   2            //R_follow();
+  45   2            //auto_avoid();
+  46   2          //auto_foll
+  47   2          DECISION_MAIN();    
+  48   2          }
+  49   1      }
+  50          void delay(unsigned int n,unsigned char mode)
+  51          {  unsigned char x;unsigned int x1;unsigned char x2;
+  52   1         switch(mode)
+  53   1         {
+  54   2          case 0: while(n--){x=100;while(x--);};break;//ms
+  55   2          case 1: while(n--){x1=10000;while(x1--){x2=100;while(x2--);}};break;//s
+C51 COMPILER V9.60.0.0   MAIN                                                              09/01/2022 19:19:40 PAGE 2   
+
+  56   2         }
+  57   1      }
+  58          /*int Delay1ms(int n)   //@11.0592MHz
+  59          {
+  60            unsigned char i, j;
+  61            for(n;n>0;n--){
+  62            _nop_();
+  63            _nop_();
+  64            _nop_();
+  65            i = 11;
+  66            j = 190;
+  67            do
+  68            {
+  69              while (--j);
+  70            } while (--i);
+  71          }
+  72          }*/
+  73          
+  74          void DECISION_MAIN()
+  75          {
+  76   1            switch(ircode[2])
+  77   1            {
+  78   2              case 0x1c:
+  79   2              case 0x11:beep = 1;go_stop();break;
+  80   2              case 0x08:
+  81   2              case 0x5a:break;
+  82   2              case 0x0c:find_track();break;
+  83   2              case 0x5e:auto_avoid();break;
+  84   2              case 0x42:auto_follow();break;
+  85   2              default:break;
+  86   2            } 
+  87   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    130    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
