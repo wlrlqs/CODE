@@ -1,0 +1,27 @@
+{
+    "files.associations": {
+        "auto_infantry.h": "c",
+        "driver_motorseverbase.h": "c",
+        "driver_motorseverinit.h": "c",
+        "driver_motorsever.h": "c",
+        "driver_motorseverlist.h": "c",
+        "chassis.h": "c",
+        "driver_imusc.h": "c",
+        "driver_vl53l0x.h": "c",
+        "motorhandle.h": "c",
+        "board.h": "c",
+        "driver.h": "c",
+        "driver_dtu.h": "c",
+        "driver_icm42605.h": "c",
+        "type_can_isp.h": "c",
+        "cansend.h": "c",
+        "bsp.h": "c",
+        "bsp_can.h": "c",
+        "driver_rmmotor.h": "c",
+        "stm32f4xx.h": "c",
+        "driver_slave_sensor.h": "c",
+        "keyboard.h": "c",
+        "driver_m1502amotor.h": "c",
+        "util.h": "c"
+    }
+}

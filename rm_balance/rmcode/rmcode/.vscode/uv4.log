@@ -1,0 +1,37 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\keil5\ARM\ARMCC\Bin'
+Build target 'Odin'
+compiling chassis.c...
+Applications\chassis.c(397): warning:  #177-D: variable "PWM_out"  was declared but never referenced
+  	static float Encoder_S,Encoder_Err_Lowout_last,PWM_out,Encoder_Err,Encoder_Err_Lowout,pitchout;
+Applications\chassis.c(407): warning:  #177-D: variable "PWM_out"  was declared but never referenced
+  	static float Encoder_S,Encoder_Err_Lowout_last,PWM_out,Encoder_Err,Encoder_Err_Lowout,pitchout;
+Applications\chassis.c(506): warning:  #940-D: missing return statement at end of non-void function "slidingBlocksControl" 
+  }
+Applications\chassis.c(502): warning:  #550-D: variable "outPut"  was set but never used
+  	f32_t outPut,Ref,rateOut;
+Applications\chassis.c(502): warning:  #177-D: variable "rateOut"  was declared but never referenced
+  	f32_t outPut,Ref,rateOut;
+Applications\chassis.c(542): warning:  #177-D: variable "max_torque"  was declared but never referenced
+  	f32_t	max_torque = 0.0f;
+Applications\chassis.c(543): warning:  #177-D: variable "torque_rate"  was declared but never referenced
+  	f32_t 	torque_rate = 0.0f;
+Applications\chassis.c(544): warning:  #177-D: variable "temp"  was declared but never referenced
+  	f32_t 	temp = 0.0f;
+Applications\chassis.c(545): warning:  #177-D: variable "i"  was declared but never referenced
+  	u8 		i = 0;
+Applications\chassis.c(591): warning:  #177-D: function "chassisStopHandle"  was declared but never referenced
+  static void chassisStopHandle(void){
+Applications\chassis.c(599): warning:  #177-D: function "chassisRelaxHandle"  was declared but never referenced
+  static void chassisRelaxHandle(void){
+Applications\chassis.c(614): warning:  #177-D: function "followGimbalHandle"  was declared but never referenced
+  static void followGimbalHandle(void){
+Applications\chassis.c(665): warning:  #177-D: function "separateGimbalHandle"  was declared but never referenced
+  static void separateGimbalHandle(void){
+Applications\chassis.c(510): warning:  #177-D: function "slantAngleCount"  was declared but never referenced
+  static f32_t slantAngleCount(f32_t theta1, f32_t theta2, f32_t imuAngle){
+Applications\chassis.c: 14 warnings, 0 errors
+linking...
+Program Size: Code=156268 RO-data=6620 RW-data=54856 ZI-data=60052  
+FromELF: creating hex file...
+".\Objects\Odin.axf" - 0 Error(s), 14 Warning(s).
+Build Time Elapsed:  00:00:08
