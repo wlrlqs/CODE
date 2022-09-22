@@ -3,7 +3,7 @@
         {
             "name": "目标 1",
             "includePath": [
-                "d:\\日常\\各种文档\\ALL_CODE\\SmartCar"
+                "e:\\日常\\各种文档\\编程源文件\\SmartCar"
             ],
             "defines": [
                 "__C51__",

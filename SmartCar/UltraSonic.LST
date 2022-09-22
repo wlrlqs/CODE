@@ -1,9 +1,9 @@
-C51 COMPILER V9.60.0.0   ULTRASONIC                                                        09/01/2022 19:19:41 PAGE 1   
+C51 COMPILER V9.57.0.0   ULTRASONIC                                                        06/29/2022 00:35:11 PAGE 1   
 
 
-C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ULTRASONIC
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE ULTRASONIC
 OBJECT MODULE PLACED IN UltraSonic.OBJ
-COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE UltraSonic.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE UltraSonic.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
 
 line level    source
 
@@ -56,13 +56,13 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    134    ----
+   CODE SIZE        =    135    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =      4    ----
    IDATA SIZE       =   ----    ----
-C51 COMPILER V9.60.0.0   ULTRASONIC                                                        09/01/2022 19:19:41 PAGE 2   
+C51 COMPILER V9.57.0.0   ULTRASONIC                                                        06/29/2022 00:35:11 PAGE 2   
 
    BIT SIZE         =      1    ----
 END OF MODULE INFORMATION.

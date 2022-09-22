@@ -28,7 +28,7 @@ extern void	oled_auto_avoid();
 extern void	oled_auto_follow();
 //OLED
 extern bit Display;
-//UI test
+
 void InitInfrared()
 {	
 	IR_INPUT = 1;

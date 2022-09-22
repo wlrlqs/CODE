@@ -1,9 +1,9 @@
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 1   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 1   
 
 
-C51 COMPILER V9.60.0.0, COMPILATION OF MODULE EMCONTROL
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE EMCONTROL
 OBJECT MODULE PLACED IN EMcontrol.OBJ
-COMPILER INVOKED BY: C:\Keil_v5_c51\C51\BIN\C51.EXE EMcontrol.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE EMcontrol.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   53   1        EM1_1=1,EM1_2=1;
   54   1        EM2_1=1,EM2_2=1;
   55   1      }
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 2   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 2   
 
   56          void go_forward()
   57          {
@@ -126,7 +126,7 @@ line level    source
  115   2          case 6:PWM_LEVEL_1=4;break;
  116   2          case 4:PWM_LEVEL_1=2;break;
  117   2        }
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 3   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 3   
 
  118   1        switch(PWM_LEVEL_2)
  119   1        {
@@ -138,7 +138,7 @@ line level    source
  125   1      }
  126          void find_track()
  127          {
- 128   1        if(left_led1 == 0 && right_led1 == 0)//左右没识别到黑线
+ 128   1        if(left_led1 == 0 && right_led1 == 0)//左右识别到黑线
  129   1        {
  130   2          //accelerate();
  131   2          go_forward();//前进
@@ -190,7 +190,7 @@ line level    source
  177   1        {
  178   2          if(R_LED_DOWN==0&&L_LED_DOWN==1)
  179   2          {
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 4   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 4   
 
  180   3            go_left();
  181   3          }
@@ -254,7 +254,7 @@ line level    source
  239   2          if(R_LED_DOWN==0)
  240   2          {
  241   3            R_follow();
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 5   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 5   
 
  242   3          }
  243   2          else
@@ -318,7 +318,7 @@ line level    source
  299   1      }
 
 
-C51 COMPILER V9.60.0.0   EMCONTROL                                                         09/01/2022 19:19:40 PAGE 6   
+C51 COMPILER V9.57.0.0   EMCONTROL                                                         07/01/2022 19:48:50 PAGE 6   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    508    ----
